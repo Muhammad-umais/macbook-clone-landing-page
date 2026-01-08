@@ -1,77 +1,61 @@
-import { useRef } from 'react'
-import { PresentationControls } from '@react-three/drei'
-import { useGSAP } from '@gsap/react'
-import gsap from 'gsap'
+import { useRef} from "react";
+import {PresentationControls} from "@react-three/drei";
+import gsap from 'gsap';
 
-import MacbookModel16 from '../models/Macbook-16.jsx'
-import MacbookModel14 from '../models/Macbook-14.jsx'
-
-const ANIMATION_DURATION = 1
-const OFFSET_DISTANCE = 5
+import MacbookModel16 from "../models/Macbook-16.jsx";
+import MacbookModel14 from "../models/Macbook-14.jsx";
+import {useGSAP} from "@gsap/react";
+const ANIMATION_DURATION = 1;
+const OFFSET_DISTANCE = 5;
 
 const fadeMeshes = (group, opacity) => {
-    if (!group) return
+    if(!group) return;
 
     group.traverse((child) => {
-        if (!child.isMesh || !child.material) return
-
-        child.material.transparent = true
-
-        gsap.to(child.material, {
-            opacity,
-            duration: ANIMATION_DURATION,
-            ease: 'power2.out'
-        })
+        if(child.isMesh) {
+            child.material.transparent = true;
+            gsap.to(child.material, { opacity, duration: ANIMATION_DURATION })
+        }
     })
 }
-
 
 const moveGroup = (group, x) => {
-    if (!group) return
+    if(!group) return;
 
-    gsap.to(group.position, {
-        x,
-        duration: ANIMATION_DURATION,
-        ease: 'power2.out'
-    })
+    gsap.to(group.position, { x, duration: ANIMATION_DURATION })
 }
 
-export default function ModelSwitcher({ scale, isMobile }) {
-    const SCALE_LARGE_DESKTOP = 0.08
-    const SCALE_LARGE_MOBILE = 0.05
+const ModelSwitcher = ({ scale, isMobile }) => {
+    const SCALE_LARGE_DESKTOP = 0.08;
+    const SCALE_LARGE_MOBILE = 0.05;
 
-    const smallMacbookRef = useRef(null)
-    const largeMacbookRef = useRef(null)
+    const smallMacbookRef = useRef();
+    const largeMacbookRef = useRef();
 
-    const showLargeMacbook =
-        scale === SCALE_LARGE_DESKTOP ||
-        scale === SCALE_LARGE_MOBILE
+    const showLargeMacbook = scale === SCALE_LARGE_DESKTOP || scale === SCALE_LARGE_MOBILE;
 
-    useGSAP(
-        () => {
-            if (showLargeMacbook) {
-                moveGroup(smallMacbookRef.current, -OFFSET_DISTANCE)
-                moveGroup(largeMacbookRef.current, 0)
+    useGSAP(() => {
+        if(showLargeMacbook) {
+            moveGroup(smallMacbookRef.current, -OFFSET_DISTANCE);
+            moveGroup(largeMacbookRef.current, 0);
 
-                fadeMeshes(smallMacbookRef.current, 0)
-                fadeMeshes(largeMacbookRef.current, 1)
-            } else {
-                moveGroup(smallMacbookRef.current, 0)
-                moveGroup(largeMacbookRef.current, OFFSET_DISTANCE)
+            fadeMeshes(smallMacbookRef.current, 0);
+            fadeMeshes(largeMacbookRef.current, 1);
+        } else {
+            moveGroup(smallMacbookRef.current, 0);
+            moveGroup(largeMacbookRef.current, OFFSET_DISTANCE);
 
-                fadeMeshes(smallMacbookRef.current, 1)
-                fadeMeshes(largeMacbookRef.current, 0)
-            }
-        },
-        { dependencies: [scale] }
-    )
+            fadeMeshes(smallMacbookRef.current, 1);
+            fadeMeshes(largeMacbookRef.current, 0);
+        }
+    }, [scale])
 
     const controlsConfig = {
         snap: true,
         speed: 1,
         zoom: 1,
         azimuth: [-Infinity, Infinity],
-        config: { mass: 1, tension: 0, friction: 26 }
+        config: {mass:1, tension: 0, friction: 26}
     }
 
     return (
@@ -90,3 +74,4 @@ export default function ModelSwitcher({ scale, isMobile }) {
         </>
     )
 }
+export default ModelSwitcher
